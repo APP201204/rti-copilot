@@ -94,7 +94,18 @@ docker run -d -p 3000:8080 \
   ghcr.io/open-webui/open-webui:main
 ```
 
-### Option 3: With NVIDIA GPU Support
+### Option 3: With Gemini API Only
+
+```bash
+docker run -d -p 3000:8080 \
+  -e GOOGLE_API_KEY=your_gemini_api_key \
+  -v open-webui:/app/backend/data \
+  --name open-webui \
+  --restart always \
+  ghcr.io/open-webui/open-webui:main
+```
+
+### Option 4: With NVIDIA GPU Support
 
 ```bash
 docker run -d -p 3000:8080 \
@@ -108,7 +119,7 @@ docker run -d -p 3000:8080 \
 
 **Note**: Requires [NVIDIA CUDA container toolkit](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/)
 
-### Option 4: With Bundled Ollama
+### Option 5: With Bundled Ollama
 
 **With GPU support**:
 ```bash
@@ -135,6 +146,20 @@ docker run -d -p 3000:8080 \
 
 The repository includes a `docker-compose.yaml` for SearXNG (web search) integration.
 
+### SearXNG Configuration
+
+The docker-compose.yaml includes a SearXNG service with the following configuration:
+- **Image**: `searxng/searxng:latest`
+- **Container Name**: `searxng`
+- **Port**: `8090:8080` (host:container)
+- **Volume**: `./searxng:/etc/searxng` (mounts local searxng config directory)
+- **Environment Variables**:
+  - `SEARXNG_BASE_URL=http://localhost:8090/`
+  - `SEARXNG_LIMITER=false`
+- **Restart Policy**: `unless-stopped`
+
+### Starting SearXNG
+
 1. **Start SearXNG**:
    ```bash
    docker-compose up -d
@@ -145,6 +170,18 @@ The repository includes a `docker-compose.yaml` for SearXNG (web search) integra
 
 3. **Configure Open WebUI**:
    - In Open WebUI settings, set the web search URL to `http://localhost:8090`
+
+### Stopping SearXNG
+
+```bash
+docker-compose down
+```
+
+### Viewing Logs
+
+```bash
+docker-compose logs -f searxng
+```
 
 ## Troubleshooting
 
